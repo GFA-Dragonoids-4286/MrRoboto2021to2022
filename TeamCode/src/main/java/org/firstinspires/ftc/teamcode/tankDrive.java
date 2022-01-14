@@ -20,11 +20,13 @@ public class tankDrive extends OpMode
     private DcMotor slitherMotor;
     private DcMotor erectMotor;
     private DcMotor gropeMotor;
-    private DcMotor c;
+    private DcMotor carousel;
+
     private double lp;
     private double rp;
-    private double d;
-    private double t;
+    private float gp;
+    public float gropeDelay = 0.0f;
+
 
     void InitWheels() {
 
@@ -68,9 +70,9 @@ public class tankDrive extends OpMode
 
     void InitCarousel(){
 
-        c = hardwareMap.get(DcMotor.class, "c");
-        c.setDirection(DcMotor.Direction.FORWARD);
-        c.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        carousel = hardwareMap.get(DcMotor.class, "c");
+        carousel.setDirection(DcMotor.Direction.FORWARD);
+        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
 
@@ -148,6 +150,12 @@ public class tankDrive extends OpMode
             rf.setPower(rp);
         }
 
+        if (gamepad2.a && runtime.time() > gropeDelay) {
+            gp = 0.5f;
+            gropeDelay = (float) (runtime.time() + 0.4f);
+            gropeMotor.setPower(gp);
+        }
+
     }
 
     void reset() {
@@ -159,7 +167,7 @@ public class tankDrive extends OpMode
         slitherMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         erectMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         gropeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        c.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         // Set a Target Position for the Motors of Zero
@@ -170,7 +178,7 @@ public class tankDrive extends OpMode
         slitherMotor.setTargetPosition(0);
         erectMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         gropeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        c.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Runs the Current Motors to the Position Specified by .setTargetPosition(0)
         rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
