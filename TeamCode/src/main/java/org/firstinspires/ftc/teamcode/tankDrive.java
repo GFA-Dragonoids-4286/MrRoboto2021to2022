@@ -25,6 +25,7 @@ public class tankDrive extends OpMode
     private double lp;
     private double rp;
     private float gp;
+    private float erectPOWER;
     public float gropeDelay = 0.0f;
 
 
@@ -97,6 +98,7 @@ public class tankDrive extends OpMode
      */
     @Override
     public void init_loop() {
+
     }
 
     /*
@@ -114,10 +116,6 @@ public class tankDrive extends OpMode
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
 
-
-        // Choose to drive using either Tank Mode, or POV Mode
-        // Comment out the method that's not used.  The default below is POV.
-
         // POV Mode
         // - This uses basic math to combine motions and is easier to drive straight.
         /*
@@ -130,12 +128,16 @@ public class tankDrive extends OpMode
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
         lp  = -gamepad1.left_stick_y;
         rp = -gamepad1.right_stick_y;
+        erectPOWER = gamepad1.right_trigger;
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", lp, rp);
 
-        if (gamepad1.left_stick_button) {
+        erectMotor.setPower(erectPOWER);
+
+        if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
 
             // Send calculated power to wheels
             lb.setPower(lp/2);
@@ -150,11 +152,16 @@ public class tankDrive extends OpMode
             rf.setPower(rp);
         }
 
-        if (gamepad2.a && runtime.time() > gropeDelay) {
+        if (gamepad1.a && runtime.time() > gropeDelay) {
             gp = 0.5f;
             gropeDelay = (float) (runtime.time() + 0.4f);
-            gropeMotor.setPower(gp);
+        } else {
+            gp = 0f;
         }
+        gropeMotor.setPower(gp);
+
+
+
 
     }
 
