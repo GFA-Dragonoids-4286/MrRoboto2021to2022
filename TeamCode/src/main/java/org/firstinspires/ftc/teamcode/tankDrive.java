@@ -128,14 +128,10 @@ public class tankDrive extends OpMode
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
         lp  = -gamepad1.left_stick_y;
         rp = -gamepad1.right_stick_y;
-        erectPOWER = gamepad1.right_trigger;
-
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", lp, rp);
-
-        erectMotor.setPower(erectPOWER);
 
         if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
 
@@ -160,6 +156,12 @@ public class tankDrive extends OpMode
         }
         gropeMotor.setPower(gp);
 
+        if (gamepad1.right_trigger > 0){
+            erectPOWER = gamepad1.right_trigger;
+        } else if(gamepad1.left_trigger > 0){
+            erectPOWER = -gamepad1.left_trigger;
+        }
+        erectMotor.setPower(erectPOWER);
 
 
 
