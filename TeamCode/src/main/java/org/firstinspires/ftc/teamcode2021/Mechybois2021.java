@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode2;
+package org.firstinspires.ftc.teamcode2021;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -19,8 +20,12 @@ import com.qualcomm.robotcore.hardware.Servo;
  * name. Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode
  * list
  */
-@TeleOp(name = "Tomo Arigato Mr. Roboto", group = "TeleOp")
-public class TomoArigatoMrRoboto extends OpMode {
+@TeleOp(name = "Mecanum2021", group = "TeleOp")
+public class Mechybois2021 extends OpMode {
+
+  // Global Variables
+  // Global Variables
+  static final double TICKS_PER_ROTATION = 1120.0 * 0.75;
 
   // Declare OpMode members.
   private ElapsedTime runtime = new ElapsedTime();
@@ -51,12 +56,6 @@ public class TomoArigatoMrRoboto extends OpMode {
   public boolean armRaised = false;
   public boolean firstTick = false;
   public float armRotationTolerance = 10;
-
-  // Use Encoders
-  public float currentLeftFrontValue = 0.0f;
-  public float currentRightFrontValue = 0.0f;
-  public float currentLeftBackValue = 0.0f;
-  public float currentRightBackValue = 0.0f;
 
   // Push Servo
   public Servo pushServo = null;
@@ -98,30 +97,31 @@ public class TomoArigatoMrRoboto extends OpMode {
     lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-    // Set Current Encoder Position
-    currentLeftFrontValue = lf.getCurrentPosition();
-    currentRightFrontValue = rf.getCurrentPosition();
-    currentLeftBackValue = lb.getCurrentPosition();
-    currentRightBackValue = rb.getCurrentPosition();
-
-    // Set Encoder Position
-    lf.setTargetPosition((int) currentLeftFrontValue);
-    rf.setTargetPosition((int) currentRightFrontValue);
-    lb.setTargetPosition((int) currentLeftBackValue);
-    rb.setTargetPosition((int) currentRightBackValue);
-
     // Make the Motors so they run using the Encoder
     // REASON: This Leads To More Dependable Movement/ We are Now Able to Track Our Movement
-    lf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    lb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    rb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+  }
 
-    // Set the Power so Op modes Hopefully Work
-    lf.setPower(0.1f);
-    lb.setPower(0.1f);
-    rf.setPower(0.1f);
-    rb.setPower(0.1f);
+  public float RemapServoValue(float angle, Servo servo) {
+
+    float maxServoValue = (float) servo.MAX_POSITION;
+    float minServoValue = (float) servo.MIN_POSITION;
+
+    float lerpValue = angle / 180;
+
+    // 0 -> Min Servo Value
+    // 180 -> Max Servo Value
+
+    //    if (lerpValue > 1) lerpValue = 1;
+    //    if (lerpValue < 0) lerpValue = 0;
+    return Lerp(minServoValue, maxServoValue, lerpValue);
+  }
+
+  float Lerp(float a, float b, float f) {
+    return a + f * (b - a);
   }
 
   public void InitPushServo() {
@@ -137,8 +137,8 @@ public class TomoArigatoMrRoboto extends OpMode {
 
     // Set the direction of the Driving Motors
     // REASON: For the Mechanim Wheels to work simply, we Invert the Left Wheels.
-    leftShooter.setDirection(DcMotor.Direction.FORWARD);
-    rightShooter.setDirection(DcMotor.Direction.FORWARD);
+    leftShooter.setDirection(DcMotor.Direction.REVERSE);
+    rightShooter.setDirection(DcMotor.Direction.REVERSE);
 
     // Make it so that if there is no power to motors, they break.
     // REASON: Makes the robot stop much faster.
@@ -240,9 +240,12 @@ public class TomoArigatoMrRoboto extends OpMode {
     // REASON: If We Give the Variables the Gamepad Inputs Directly, it Will Not Scale Correctly by
     // Itself
 
-    float drive = scaleInput(-gamepad1.left_stick_y);
-    float strafe = -scaleInput(gamepad1.left_stick_x);
-    float rotate = -scaleInput(gamepad1.right_stick_x);
+    // Negative signs are due to the chasis being in one direction and the components being in
+    // another
+    // Tbh- idk why this functionality occurs but we need a comment here bc kwark wants one
+    float drive = scaleInput(gamepad1.left_stick_x);
+    float strafe = scaleInput(gamepad1.left_stick_y);
+    float rotate = scaleInput(gamepad1.right_stick_x);
 
     // Log Information About the Movement that we are Doing Currently.
     // REASON: This Lets the Drivers Know that if there is a Problem, it is not the Controllers.
@@ -252,7 +255,7 @@ public class TomoArigatoMrRoboto extends OpMode {
     telemetry.addData("rotate", +rotate);
 
     // Round Down the Variables if they are Close to Certain Thresholds
-    // REASON: This Reduces the Amount of Drift that can Accur in the Controllers.
+    // REASON: This Reduces the Amount of Drift that can occur in the Controllers.
 
     if (Math.abs(drive) < controllerDriftReductionThreshold) drive = 0.0f;
     if (Math.abs(strafe) < controllerDriftReductionThreshold) strafe = 0.0f;
@@ -261,15 +264,26 @@ public class TomoArigatoMrRoboto extends OpMode {
     // Check if the "X" Button is Being Pressed on the Driving Controller
     // REASON: We Want the Robot to Move Much Slower if "X" is Pressed
 
-    currentLeftFrontValue += drive + strafe + rotate;
-    currentRightFrontValue += drive + strafe + rotate;
-    currentLeftBackValue += drive + strafe + rotate;
-    currentRightBackValue += drive + strafe + rotate;
+    if (gamepad1.left_stick_button) {
 
-    lf.setTargetPosition((int) currentLeftFrontValue);
-    rf.setTargetPosition((int) currentRightFrontValue);
-    lb.setTargetPosition((int) currentLeftBackValue);
-    rb.setTargetPosition((int) currentRightBackValue);
+      // Set the Driving Values for the Motors
+      lf.setPower(
+          reducedMovementMultiplier * Range.clip(drive + strafe + rotate, -motorMax, motorMax));
+      lb.setPower(
+          reducedMovementMultiplier * Range.clip(drive - strafe + rotate, -motorMax, motorMax));
+      rf.setPower(
+          reducedMovementMultiplier * Range.clip(drive - strafe - rotate, -motorMax, motorMax));
+      rb.setPower(
+          reducedMovementMultiplier * Range.clip(drive + strafe - rotate, -motorMax, motorMax));
+
+    } else {
+
+      // Set the Reduced Driving Values for the Motors
+      lf.setPower(Range.clip(drive + strafe + rotate, -motorMax, motorMax));
+      lb.setPower(Range.clip(drive - strafe + rotate, -motorMax, motorMax) * 0.06f);
+      rf.setPower(Range.clip(drive - strafe - rotate, -motorMax, motorMax));
+      rb.setPower(Range.clip(drive + strafe - rotate, -motorMax, motorMax) * 0.06f);
+    }
 
     if (gamepad2.a && runtime.time() > shooterToggleDelay) {
 
@@ -283,7 +297,7 @@ public class TomoArigatoMrRoboto extends OpMode {
 
     if (gamepad1.b && runtime.time() > intakeToggleDelay) {
 
-      float power = (intakeMotor.getPower() > 0.5f) ? 0.0f : 3.0f;
+      float power = (intakeMotor.getPower() < -0.5f) ? 0.0f : -3.0f;
 
       intakeToggleDelay = runtime.time() + 0.4f;
 
@@ -305,14 +319,13 @@ public class TomoArigatoMrRoboto extends OpMode {
     }
 
     if (gamepad1.right_bumper) {
-
-      pushServo.setPosition(0.5);
+      pushServo.setPosition(RemapServoValue(170, pushServo));
       pushServoDelay = runtime.time() + 0.2;
     }
 
     if (pushServoDelay < runtime.time()) {
 
-      pushServo.setPosition(0.1);
+      pushServo.setPosition(RemapServoValue(15, pushServo));
     }
 
     //    if (pushServoDelay > runtime.time() && servoPushed) {
@@ -338,11 +351,6 @@ public class TomoArigatoMrRoboto extends OpMode {
     telemetry.addData("rf pos", +rf.getCurrentPosition());
     telemetry.addData("lf pos", +lf.getCurrentPosition());
     telemetry.addData("lb pos", +lb.getCurrentPosition());
-
-    telemetry.addData("rb target pos", +rb.getTargetPosition());
-    telemetry.addData("rf target pos", +rf.getTargetPosition());
-    telemetry.addData("lf target pos", +lf.getTargetPosition());
-    telemetry.addData("lb target pos", +lb.getTargetPosition());
 
     // Push Telementry Data to Phone Display
     telemetry.update();
