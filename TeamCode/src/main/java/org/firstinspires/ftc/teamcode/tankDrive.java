@@ -24,9 +24,12 @@ public class tankDrive extends OpMode
 
     private double lp;
     private double rp;
-    private float gp;
+    private float gropePOWER;
+    private float slitherPOWER;
     private float erectPOWER;
+    private float carouselPOWER;
     public float gropeDelay = 0.0f;
+    private boolean carouselON = false;
 
 
     void InitWheels() {
@@ -132,7 +135,7 @@ public class tankDrive extends OpMode
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", lp, rp);
-
+        // Set speed
         if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
 
             // Send calculated power to wheels
@@ -148,23 +151,49 @@ public class tankDrive extends OpMode
             rf.setPower(rp);
         }
 
+        //Grope Motor
         if (gamepad1.a && runtime.time() > gropeDelay) {
-            gp = 0.5f;
+            gropePOWER = 0.5f;
             gropeDelay = (float) (runtime.time() + 0.4f);
         } else {
-            gp = 0f;
+            gropePOWER = 0f;
         }
-        gropeMotor.setPower(gp);
+        gropeMotor.setPower(gropePOWER);
 
-        if (gamepad1.right_trigger > 0){
-            erectPOWER = gamepad1.right_trigger;
-        } else if(gamepad1.left_trigger > 0){
-            erectPOWER = -gamepad1.left_trigger;
+        // Erect Motor
+        if (gamepad1.right_trigger != 0){
+            //erectPOWER = gamepad1.right_trigger;
+            erectPOWER = 0.5f;
+        } else if(gamepad1.left_trigger != 0){
+            //erectPOWER = -gamepad1.left_trigger;
+            erectPOWER = 0.5f;
         }
         erectMotor.setPower(erectPOWER);
 
+        // Slither Motor
+        if (gamepad1.right_bumper){
+            slitherPOWER = 0.5f;
+        }
+        else if (gamepad1.left_bumper){
+            slitherPOWER = -0.5f;
+        }
+        else
+        {
+            slitherPOWER = 0f;
+        }
+        slitherMotor.setPower(slitherPOWER);
 
-
+        if (gamepad2.x && gamepad2.dpad_down && gamepad2.left_stick_button ){
+            if (!carouselON) {
+                carouselPOWER = 1f;
+                carouselON = true;
+            }
+            else{
+                carouselPOWER = 0f;
+                carouselON = false;
+            }
+        }
+        
     }
 
     void reset() {
