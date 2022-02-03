@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Tank Drive", group="Iterative Opmode")
 @Disabled
-public class tankDrive extends OpMode
+public class ArigatoGozaimasuMrRoboto extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -18,15 +18,15 @@ public class tankDrive extends OpMode
     private DcMotor lb = null;
     private DcMotor rb = null;
     private DcMotor slitherMotor;
-    private DcMotor erectMotor;
-    private DcMotor gropeMotor;
+    private DcMotor upMotor;
+    private DcMotor grabMotor;
     private DcMotor carousel;
 
     private double lp;
     private double rp;
-    private float gropePOWER;
+    private float grabPOWER;
     private float slitherPOWER;
-    private float erectPOWER;
+    private float upPOWER;
     private float carouselPOWER;
     public float gropeDelay = 0.0f;
     private boolean carouselON = false;
@@ -59,16 +59,16 @@ public class tankDrive extends OpMode
     void InitIntake() {
 
         slitherMotor = hardwareMap.get(DcMotor.class, "slitherMotor");
-        erectMotor = hardwareMap.get(DcMotor.class, "erectMotor");
-        gropeMotor = hardwareMap.get(DcMotor.class, "gropeMotor");
+        upMotor = hardwareMap.get(DcMotor.class, "erectMotor");
+        grabMotor = hardwareMap.get(DcMotor.class, "gropeMotor");
 
         slitherMotor.setDirection(DcMotor.Direction.FORWARD);
-        erectMotor.setDirection(DcMotor.Direction.FORWARD);
-        gropeMotor.setDirection(DcMotor.Direction.FORWARD);
+        upMotor.setDirection(DcMotor.Direction.FORWARD);
+        grabMotor.setDirection(DcMotor.Direction.FORWARD);
 
         slitherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        erectMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        gropeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        grabMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
 
@@ -134,7 +134,7 @@ public class tankDrive extends OpMode
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", lp, rp);
+
         // Set speed
         if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
 
@@ -153,22 +153,20 @@ public class tankDrive extends OpMode
 
         //Grope Motor
         if (gamepad1.a && runtime.time() > gropeDelay) {
-            gropePOWER = 0.5f;
+            grabPOWER = 0.5f;
             gropeDelay = (float) (runtime.time() + 0.4f);
         } else {
-            gropePOWER = 0f;
+            grabPOWER = 0f;
         }
-        gropeMotor.setPower(gropePOWER);
 
         // Erect Motor
         if (gamepad1.right_trigger != 0){
             //erectPOWER = gamepad1.right_trigger;
-            erectPOWER = 0.5f;
+            upPOWER = 0.5f;
         } else if(gamepad1.left_trigger != 0){
             //erectPOWER = -gamepad1.left_trigger;
-            erectPOWER = 0.5f;
+            upPOWER = 0.5f;
         }
-        erectMotor.setPower(erectPOWER);
 
         // Slither Motor
         if (gamepad1.right_bumper){
@@ -177,23 +175,24 @@ public class tankDrive extends OpMode
         else if (gamepad1.left_bumper){
             slitherPOWER = -0.5f;
         }
-        else
-        {
+        else {
             slitherPOWER = 0f;
         }
-        slitherMotor.setPower(slitherPOWER);
 
-        if (gamepad2.x && gamepad2.dpad_down && gamepad2.left_stick_button ){
+        if (gamepad2.x){
             if (!carouselON) {
                 carouselPOWER = 1f;
                 carouselON = true;
-            }
-            else{
+            } else {
                 carouselPOWER = 0f;
                 carouselON = false;
             }
         }
-        
+        grabMotor.setPower(grabPOWER);
+        upMotor.setPower(upPOWER);
+        slitherMotor.setPower(slitherPOWER);
+        carousel.setPower(carouselPOWER);
+        telemetry.addData("Motors", "left (%.2f), right (%.2f), group", lp, rp);
     }
 
     void reset() {
@@ -203,10 +202,9 @@ public class tankDrive extends OpMode
         lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slitherMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        erectMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        gropeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        grabMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
         // Set a Target Position for the Motors of Zero
         rf.setTargetPosition(0);
@@ -214,8 +212,8 @@ public class tankDrive extends OpMode
         lf.setTargetPosition(0);
         lb.setTargetPosition(0);
         slitherMotor.setTargetPosition(0);
-        erectMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        gropeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        grabMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Runs the Current Motors to the Position Specified by .setTargetPosition(0)
         rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
