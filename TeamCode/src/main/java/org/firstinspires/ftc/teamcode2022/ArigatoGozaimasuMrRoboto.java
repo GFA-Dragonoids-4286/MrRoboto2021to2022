@@ -128,7 +128,7 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
         d = -gamepad1.left_stick_y;
         t  =  gamepad1.right_stick_x;
         lp = Range.clip(d + t, -1.0, 1.0) ;
-        rp = Range.clip(d - t, -1.0, 1.0) ;
+        rp = Range.clip(d - t, -1, .9) ;
         /*
         // Tank Mode
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
