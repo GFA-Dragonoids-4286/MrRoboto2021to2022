@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode2022;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -31,6 +31,9 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
     public float gropeDelay = 0.0f;
     private boolean carouselON = false;
 
+    private float d;
+    private float t;
+
 
     void InitWheels() {
 
@@ -59,8 +62,8 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
     void InitIntake() {
 
         slitherMotor = hardwareMap.get(DcMotor.class, "slitherMotor");
-        upMotor = hardwareMap.get(DcMotor.class, "erectMotor");
-        grabMotor = hardwareMap.get(DcMotor.class, "gropeMotor");
+        upMotor = hardwareMap.get(DcMotor.class, "upMotor");
+        grabMotor = hardwareMap.get(DcMotor.class, "grabMotor");
 
         slitherMotor.setDirection(DcMotor.Direction.FORWARD);
         upMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -121,17 +124,17 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
 
         // POV Mode
         // - This uses basic math to combine motions and is easier to drive straight.
-        /*
+
         d = -gamepad1.left_stick_y;
         t  =  gamepad1.right_stick_x;
         lp = Range.clip(d + t, -1.0, 1.0) ;
         rp = Range.clip(d - t, -1.0, 1.0) ;
-        */
+        /*
         // Tank Mode
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
         lp  = -gamepad1.left_stick_y;
         rp = -gamepad1.right_stick_y;
-
+        */
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
@@ -227,5 +230,4 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
     @Override
     public void stop() {
     }
-
 }
