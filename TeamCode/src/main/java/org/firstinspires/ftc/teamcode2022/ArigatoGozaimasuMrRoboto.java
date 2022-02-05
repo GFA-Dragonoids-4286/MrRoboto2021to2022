@@ -48,8 +48,8 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
         // REASON: Some of the Motors are Placed Backwards, so We Need to Account for that.
         rf.setDirection(DcMotor.Direction.FORWARD);
         rb.setDirection(DcMotor.Direction.FORWARD);
-        lf.setDirection(DcMotor.Direction.REVERSE);
-        lb.setDirection(DcMotor.Direction.REVERSE);
+        lf.setDirection(DcMotor.Direction.FORWARD);
+        lb.setDirection(DcMotor.Direction.FORWARD);
 
         // Set the Motor Behaviors
         // REASON: When We Stop Power on the Robot, the Robot Should Brake Completely
@@ -78,7 +78,7 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
     void InitCarousel(){
 
         carousel = hardwareMap.get(DcMotor.class, "c");
-        carousel.setDirection(DcMotor.Direction.FORWARD);
+        carousel.setDirection(DcMotor.Direction.REVERSE);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
@@ -165,33 +165,31 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
         }
 
         // Erect Motor
-        if (gamepad1.right_trigger != 0){
+        if (gamepad1.right_trigger >= 0.5f){
             //erectPOWER = gamepad1.right_trigger;
-            upPOWER = 0.5f;
-        } else if(gamepad1.left_trigger != 0){
+            upPOWER = gamepad1.right_trigger;
+        } else if(gamepad1.left_trigger >= 0.5f){
             //erectPOWER = -gamepad1.left_trigger;
-            upPOWER = 0.5f;
+            upPOWER = -gamepad1.left_trigger;
+        } else {
+            upPOWER = 0f;
         }
 
         // Slither Motor
         if (gamepad1.right_bumper){
-            slitherPOWER = 0.5f;
+            slitherPOWER = 1f;
         }
         else if (gamepad1.left_bumper){
-            slitherPOWER = -0.5f;
+            slitherPOWER = -0.7f;
         }
         else {
             slitherPOWER = 0f;
         }
 
         if (gamepad2.x){
-            if (!carouselON) {
-                carouselPOWER = 1f;
-                carouselON = true;
-            } else {
-                carouselPOWER = 0f;
-                carouselON = false;
-            }
+            carouselPOWER = 0.7f;
+        } else {
+            carouselPOWER = 0f;
         }
         grabMotor.setPower(grabPOWER);
         upMotor.setPower(upPOWER);
