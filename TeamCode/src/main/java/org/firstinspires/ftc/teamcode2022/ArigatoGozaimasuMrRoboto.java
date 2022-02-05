@@ -155,9 +155,11 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
         }
 
         //Grope Motor
-        if (gamepad1.a && runtime.time() > gropeDelay) {
+        if (gamepad1.a) {
             grabPOWER = 0.5f;
             gropeDelay = (float) (runtime.time() + 0.4f);
+        } else if (gamepad1.b){
+            grabPOWER = -0.5f;
         } else {
             grabPOWER = 0f;
         }
