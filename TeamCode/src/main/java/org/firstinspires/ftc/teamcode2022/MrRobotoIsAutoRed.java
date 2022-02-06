@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
+import java.util.concurrent.TimeUnit;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 @Autonomous(name = "MrRobotoIsAuto", group = "Autonomous")
-public class MrRobotoIsAuto extends LinearOpMode {
+public class MrRobotoIsAutoRed extends LinearOpMode {
 
     private DcMotor lf;
     private DcMotor rf;
@@ -45,12 +45,17 @@ public class MrRobotoIsAuto extends LinearOpMode {
     private float d;
     private float t;
 
-    void main(){
-
+    @Override
+    public void runOpMode() {
+        Initialize();
+        waitForStart();
+        turnLeft();
+        driveFlat();
+        turnRight();
+        //moveBack();
+        runCarousel();
     }
 
-    @Override
-    public void runOpMode() {}
     void InitWheels() {
 
         // Get the Motors
@@ -64,8 +69,8 @@ public class MrRobotoIsAuto extends LinearOpMode {
         // REASON: Some of the Motors are Placed Backwards, so We Need to Account for that.
         rf.setDirection(DcMotor.Direction.FORWARD);
         rb.setDirection(DcMotor.Direction.FORWARD);
-        lf.setDirection(DcMotor.Direction.REVERSE);
-        lb.setDirection(DcMotor.Direction.REVERSE);
+        lf.setDirection(DcMotor.Direction.FORWARD);
+        lb.setDirection(DcMotor.Direction.FORWARD);
 
         // Set the Motor Behaviors
         // REASON: When We Stop Power on the Robot, the Robot Should Brake Completely
@@ -141,18 +146,84 @@ public class MrRobotoIsAuto extends LinearOpMode {
         grabMotor.setPower(0);
         upMotor.setPower(0);
     }
+    void turnLeft(){
+        lf.setPower(-1);
+        lb.setPower(-1);
+        rf.setPower(1);
+        rb.setPower(1);
+        //TimeUnit.SECONDS.sleep(1);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
+        lf.setPower(0);
+        lb.setPower(0);
+        rf.setPower(0);
+        rb.setPower(0);
+    }
+    void driveFlat() {
 
-    void driveFlat(float vertical, float horizontal) {
-
-        lf.setPower(Range.clip(vertical + horizontal, -1.0, 1.0));
-        lb.setPower(Range.clip(vertical - horizontal, -1.0, 1.0));
-        rf.setPower(Range.clip(vertical - horizontal, -1.0, 1.0));
-        rb.setPower(Range.clip(vertical + horizontal, -1.0, 1.0));
-
-        return;
+        lf.setPower(1);
+        lb.setPower(1);
+        rf.setPower(.7);
+        rb.setPower(.7);
+        //TimeUnit.SECONDS.sleep(1);
+        try {
+            Thread.sleep(1700);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
+        lf.setPower(0);
+        lb.setPower(0);
+        rf.setPower(0);
+        rb.setPower(0);
     }
 
+    void turnRight() {
+        lf.setPower(1);
+        lb.setPower(1);
+        rf.setPower(-0.7);
+        rb.setPower(-0.7);
+        //TimeUnit.SECONDS.sleep(1);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
+        lf.setPower(0);
+        lb.setPower(0);
+        rf.setPower(0);
+        rb.setPower(0);
+    }
+    void moveBack(){
 
+        lf.setPower(-1);
+        lb.setPower(-1);
+        rf.setPower(-.7);
+        rb.setPower(-.7);
+        //TimeUnit.SECONDS.sleep(1);
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
+        lf.setPower(0);
+        lb.setPower(0);
+        rf.setPower(0);
+        rb.setPower(0);
+    }
+
+    void runCarousel(){
+        carousel.setPower(1);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
+        carousel.setPower(0);
+
+    }
 
 
 }

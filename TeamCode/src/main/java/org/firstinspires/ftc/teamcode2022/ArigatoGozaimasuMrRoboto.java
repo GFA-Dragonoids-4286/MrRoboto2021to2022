@@ -156,7 +156,7 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
 
         //Grope Motor
         if (gamepad1.a) {
-            grabPOWER = 0.5f;
+            grabPOWER = 1f;
             gropeDelay = (float) (runtime.time() + 0.4f);
         } else if (gamepad1.b){
             grabPOWER = -0.5f;
@@ -165,21 +165,21 @@ public class ArigatoGozaimasuMrRoboto extends OpMode
         }
 
         // Erect Motor
-        if (gamepad1.right_trigger >= 0.5f){
+        if (gamepad2.right_trigger >= 0.5f){
             //erectPOWER = gamepad1.right_trigger;
-            upPOWER = gamepad1.right_trigger;
-        } else if(gamepad1.left_trigger >= 0.5f){
+            upPOWER = gamepad2.right_trigger;
+        } else if(gamepad2.left_trigger >= 0.5f){
             //erectPOWER = -gamepad1.left_trigger;
-            upPOWER = -gamepad1.left_trigger;
+            upPOWER = -gamepad2.left_trigger;
         } else {
             upPOWER = 0f;
         }
 
         // Slither Motor
-        if (gamepad1.right_bumper){
+        if (gamepad2.right_bumper){
             slitherPOWER = 1f;
         }
-        else if (gamepad1.left_bumper){
+        else if (gamepad2.left_bumper){
             slitherPOWER = -0.7f;
         }
         else {
