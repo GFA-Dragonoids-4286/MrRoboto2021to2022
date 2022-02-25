@@ -36,7 +36,7 @@ public class MrsRoboto extends OpMode {
 
     public void InitArm(){
         arm = hardwareMap.get(DcMotor.class, "arm");
-        arm.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.REVERSE);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -48,7 +48,7 @@ public class MrsRoboto extends OpMode {
 
     void InitCarousel(){
 
-        carousel = hardwareMap.get(DcMotor.class, "c");
+        carousel = hardwareMap.get(DcMotor.class, "carousel");
         carousel.setDirection(DcMotor.Direction.REVERSE);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -80,17 +80,19 @@ public class MrsRoboto extends OpMode {
         }
 
         if (gamepad1.right_bumper){
-            scoopPower = 1;
+            scoopPower = .5;
         } else if (gamepad1.left_bumper){
-            scoopPower = -1;
+            scoopPower = -.5;
         } else {
             scoopPower = 0;
         }
 
         if (gamepad1.right_trigger >= 0.5){
-            armPower = gamepad1.right_trigger;
+            armPower = gamepad1.right_trigger/2;
         } else if (gamepad1.left_trigger >= 0.5){
-            armPower = gamepad1.left_trigger;
+            armPower = -gamepad1.left_trigger/2;
+        } else if (gamepad1.left_trigger < 0.5 && gamepad1.right_trigger < 0.5){
+            armPower = 0;
         }
 
         if (gamepad1.a && !carouselOn){
