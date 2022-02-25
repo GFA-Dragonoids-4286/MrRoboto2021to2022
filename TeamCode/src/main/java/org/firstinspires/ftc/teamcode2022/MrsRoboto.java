@@ -18,6 +18,7 @@ public class MrsRoboto extends OpMode {
 
     private float carouselPower;
     private boolean carouselOn = false;
+    private boolean extraStrength = false;
     private double lp;
     private double rp;
     private double armPower;
@@ -80,9 +81,9 @@ public class MrsRoboto extends OpMode {
         }
 
         if (gamepad1.right_bumper){
-            scoopPower = .5;
+            scoopPower = .25;
         } else if (gamepad1.left_bumper){
-            scoopPower = -.5;
+            scoopPower = -.25;
         } else {
             scoopPower = 0;
         }
@@ -101,6 +102,14 @@ public class MrsRoboto extends OpMode {
         } else if (gamepad1.a && carouselOn){
             carouselPower = 0;
             carouselOn = false;
+        }
+
+        if (gamepad1.b && !extraStrength){
+            scoopPower = .5;
+            extraStrength = true;
+        } else if (gamepad1.b && extraStrength){
+            extraStrength = false;
+            scoopPower = 0;
         }
 
         carousel.setPower(carouselPower);
