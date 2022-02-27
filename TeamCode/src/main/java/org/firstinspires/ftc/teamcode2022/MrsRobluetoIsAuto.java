@@ -1,13 +1,15 @@
-package org.firstinspires.ftc.teamcode2020;
+package org.firstinspires.ftc.teamcode2022;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
-@Autonomous(name = "MrsRobotoIsAuto", group = "Autonomous")
-public class AutoTask extends LinearOpMode {
+@Autonomous(name="MrsRobluetoIsAuto", group="Autonomous")
+public class MrsRobluetoIsAuto extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightWheel;
@@ -25,31 +27,25 @@ public class AutoTask extends LinearOpMode {
     private double scoopPower;
 
     @Override
-    public void runOpMode() {
-        initialize();
+    public void runOpMode() throws InterruptedException {
+        Initialize();
         waitForStart();
-        turnRight();
-        driveFlat();
-        turnLeft();
-        //moveBack();
-        runCarousel();
-        turnLeft();
-        moveBack();
-        turnRight();
+        moveForward(1000);
+        turnLeft(1000);
+        moveForward(500);
+        turnRight(1000);
+        moveBack(1000, 0.6);
+        runCarousel(10000);
+        moveForward(400);
     }
 
-    public void initialize(){
+    public void Initialize(){
         InitWheels();
         InitArm();
         InitScoop();
         InitCarousel();
-        reset();
-        halt();
-        turnLeft();
-        turnRight();
-        driveFlat();
-        moveBack();
-        runCarousel();
+
+        telemetry.addData("Status", "Initialized" + runtime.toString());
     }
 
     public void InitWheels(){
@@ -78,103 +74,64 @@ public class AutoTask extends LinearOpMode {
     void InitCarousel(){
 
         carousel = hardwareMap.get(DcMotor.class, "carousel");
-        carousel.setDirection(DcMotor.Direction.REVERSE);
+        carousel.setDirection(DcMotor.Direction.FORWARD);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
-        telemetry.addData("Status", "Initialized" + runtime.toString());
     }
 
-    void reset(){
-
-        // Stop and Reset All of the Encoders
-        rightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        // Set a Target Position for the Motors of Zero
-        leftWheel.setTargetPosition(0);
-        rightWheel.setTargetPosition(0);
-        carousel.setTargetPosition(0);
-        scoop.setTargetPosition(0);
-        arm.setTargetPosition(0);
-
-        // Runs the Current Motors to the Position Specified by .setTargetPosition(0)
-        rightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-    }
-
-    void halt() {
+    void moveBack(int time, double power){
+        rightWheel.setPower(-power);
+        leftWheel.setPower(-power);
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
         rightWheel.setPower(0);
         leftWheel.setPower(0);
-        carousel.setPower(0);
-
     }
-    void turnLeft(){
-        leftWheel.setPower(-1);
+
+    void moveForward(int time){
         rightWheel.setPower(1);
-        //TimeUnit.SECONDS.sleep(1);
+        leftWheel.setPower(1);
         try {
-            Thread.sleep(1000);
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            telemetry.addData("Status: ", e);
+        }
+        rightWheel.setPower(0);
+        leftWheel.setPower(0);
+    }
+
+    void turnLeft(int time){
+        leftWheel.setPower(1);
+        try {
+            Thread.sleep(time);
         } catch (InterruptedException e) {
             telemetry.addData("Status: ", e);
         }
         leftWheel.setPower(0);
-        rightWheel.setPower(0);
-
     }
-    void driveFlat() {
 
-        leftWheel.setPower(1);
+    void turnRight(int time){
         rightWheel.setPower(1);
-        //TimeUnit.SECONDS.sleep(1);
         try {
-            Thread.sleep(1700);
+            Thread.sleep(time);
         } catch (InterruptedException e) {
             telemetry.addData("Status: ", e);
         }
-        leftWheel.setPower(0);
         rightWheel.setPower(0);
     }
 
-    void turnRight() {
-        leftWheel.setPower(1);
-        rightWheel.setPower(-0.7);
-        //TimeUnit.SECONDS.sleep(1);
-        try {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e) {
-            telemetry.addData("Status: ", e);
-        }
-        leftWheel.setPower(0);
-        rightWheel.setPower(0);
 
-    }
-    void moveBack(){
-
-        leftWheel.setPower(-1);
-        rightWheel.setPower(-.7);
-        //TimeUnit.SECONDS.sleep(1);
+    void runCarousel(int time) {
+        carousel.setPower(0.5);
         try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            telemetry.addData("Status: ", e);
-        }
-        leftWheel.setPower(0);
-        rightWheel.setPower(0);
-    }
-
-    void runCarousel(){
-        carousel.setPower(1);
-        try {
-            Thread.sleep(5000);
+            Thread.sleep(time);
         } catch (InterruptedException e) {
             telemetry.addData("Status: ", e);
         }
         carousel.setPower(0);
-
     }
 
 

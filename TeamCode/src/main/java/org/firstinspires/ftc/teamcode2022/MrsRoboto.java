@@ -16,9 +16,9 @@ public class MrsRoboto extends OpMode {
     private DcMotor arm;
     private DcMotor carousel;
 
-    private float carouselPower;
+    private double carouselPower;
     private boolean carouselOn = false;
-    private boolean extraStrength = false;
+    private boolean holdOn = false;
     private double lp;
     private double rp;
     private double armPower;
@@ -84,12 +84,11 @@ public class MrsRoboto extends OpMode {
             scoopPower = .25;
         } else if (gamepad2.left_bumper){
             scoopPower = -.25;
-
-        } else if (gamepad2.right_bumper&& gamepad2.a){
-            scoopPower = -.25;
-        }
-
-        else {
+        } else if (gamepad2.b){
+            scoopPower = .45;
+        } else if (gamepad2.y){
+            scoopPower = .3;
+        } else {
             scoopPower = 0;
         }
 
@@ -100,25 +99,27 @@ public class MrsRoboto extends OpMode {
         } else if (gamepad2.left_trigger < 0.5 && gamepad2.right_trigger < 0.5){
             armPower = 0;
         }
-
-        if (gamepad2.a && !carouselOn){
-            carouselPower = 1;
+        /*
+        if (gamepad2.a && !carouselOn) {
+            carouselPower = .6;
             carouselOn = true;
-        } else if (gamepad2.a && carouselOn){
+        } else if (gamepad2.b && carouselOn){
             carouselPower = 0;
             carouselOn = false;
+        } else if (gamepad2.x && !carouselOn){
+            carouselPower = -.6;
+            carouselOn = true;
         }
-/*
-        if (gamepad1.b && !extraStrength){
-            scoopPower = .5;
-            extraStrength = true;
-        } else if (gamepad1.b && extraStrength){
-            extraStrength = false;
-            scoopPower = 0;
+        */
+
+        if (gamepad2.a){
+            carouselPower = .5;
+        } else if (gamepad2.x){
+            carouselPower = -.5;
+        } else {
+            carouselPower = 0;
         }
-        NEIL WHY THE FUCK DO YOU HAVE AN EXTRA POWER BUTTON
-        JUST ADD ANOTHER CONDITIONAL INTO THE ELSE IF
-*/
+
         carousel.setPower(carouselPower);
         leftWheel.setPower(lp);
         rightWheel.setPower(rp);
